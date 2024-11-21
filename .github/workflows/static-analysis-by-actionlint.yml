@@ -1,0 +1,40 @@
+name: Static-Analysis-by-ActionLint
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - '.github/actions/**'
+      - '.github/scripts/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - '.github/actions/**'
+      - '.github/scripts/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    
+    permissions:
+      contents: read
+      
+    steps:
+      - run: cat "$GITHUB_EVENT_PATH"
+      - run: gh --version
+      
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      
+      - name: Run actionlint
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/v1.7.4/scripts/download-actionlint.bash)
+          ./actionlint -color
+        shell: bash
